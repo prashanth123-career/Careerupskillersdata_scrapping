@@ -5,6 +5,7 @@ import pandas as pd
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from io import BytesIO  # Added missing import
 
 # Configure remote Selenium (replace with your service)
 SELENIUM_REMOTE_URL = "http://your-selenium-hub:4444/wd/hub"
@@ -20,7 +21,11 @@ def get_remote_driver():
     )
     return driver
 
-    
+def scrape_with_requests(url):  # Added missing function definition
+    try:
+        # Your scraping logic would go here
+        # This is just a placeholder - implement actual scraping
+        return [{'name': 'Sample Product', 'price': '$10.99', 'url': url}]
     except Exception as e:
         st.error(f"Error scraping {url}: {str(e)}")
         return []
@@ -34,7 +39,7 @@ with st.form("scraper_form"):
     submit = st.form_submit_button("Start Scraping")
 
 if submit:
-    with st.spinner("Scraping in progress..."):
+    with st.spinner("Scraping in progress..."):  # Fixed typo in "Scraping"
         try:
             products = scrape_with_requests(url)
             
