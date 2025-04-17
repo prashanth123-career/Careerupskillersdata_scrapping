@@ -1,34 +1,25 @@
 import streamlit as st
-import requests
-from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 import pandas as pd
-import os
-from io import BytesIO
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 
-# Streamlit App Config
-st.set_page_config(page_title="OSC Seeds Scraper", page_icon="🌱")
+# Configure remote Selenium (replace with your service)
+SELENIUM_REMOTE_URL = "http://your-selenium-hub:4444/wd/hub"
 
-def scrape_with_requests(url):
-    """Scrape product data using requests and BeautifulSoup"""
-    try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
-        
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # Mock data extraction - replace with actual selectors for OSCseeds.com
-        products = []
-        for product in soup.select('.product-item'):  # Update selector
-            products.append({
-                'name': product.select_one('.product-name').text.strip() if product.select_one('.product-name') else 'N/A',
-                'price': product.select_one('.price').text.strip() if product.select_one('.price') else 'N/A',
-                'url': url
-            })
-        
-        return products
+def get_remote_driver():
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--no-sandbox')
+    driver = webdriver.Remote(
+        command_executor=SELENIUM_REMOTE_URL,
+        options=options
+    )
+    return driver
+
     
     except Exception as e:
         st.error(f"Error scraping {url}: {str(e)}")
